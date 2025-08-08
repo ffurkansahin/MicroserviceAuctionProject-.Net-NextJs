@@ -1,24 +1,31 @@
+using AuctionService.Context;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<AuctionDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AuctionDbConString")));
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
+// Configure the HTTP request pipeline.
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+try
+{
+    DbInitializer.InitializeDatabase(app);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error initializing database: {ex}");
+}
 
 app.Run();
