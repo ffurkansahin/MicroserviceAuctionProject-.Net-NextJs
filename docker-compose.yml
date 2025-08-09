@@ -6,8 +6,15 @@ services:
       POSTGRES_PASSWORD: PostgresPW
       POSTGRES_DB: Auctions
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-volumes:
-  postgres_data:
+      - /var/lib/postgresql/data
+  mongoDb:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=MongoPW
+    ports:
+      - 27017:27017
+    volumes:
+      - /data/db
