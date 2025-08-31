@@ -75,7 +75,7 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - RabbitMq__Host=rabbitMq
       - ConnectionStrings__MongoDbConString=mongodb://mongo:MongoPW@mongoDb
-      - AuctionServiceUrl=http://auction-svc
+      - AuctionServiceUrl=http://auction-svc/
     ports:
       - "7002:80"
     depends_on:
