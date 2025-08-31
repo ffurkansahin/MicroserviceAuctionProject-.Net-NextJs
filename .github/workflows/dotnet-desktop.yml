@@ -1,4 +1,4 @@
-name: CI - Backend
+name: CI
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/AuctionService/
+        working-directory: Backend
     steps:
       - uses: actions/checkout@v4
 
@@ -43,9 +43,45 @@ jobs:
 
       - name: Publish artifact
         run: dotnet publish -c Release -o ../backend-publish
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend
           path: backend-publish/
+
+  frontend:
+    name: Next.js Build & Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('Frontend/package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Build
+        env:
+          run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend
+          path: Frontend/.next/
