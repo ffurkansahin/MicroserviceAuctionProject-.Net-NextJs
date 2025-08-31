@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   auction-service:
-    name: .NET Build & Test
+    name: AuctionService - .NET Build & Test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,129 +42,127 @@ jobs:
         run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
 
       - name: Publish artifact
-        run: dotnet publish -c Release -o ../backend-publish
+        run: dotnet publish -c Release -o ../auction-publish
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend
-          path: backend-publish/
-          
-    search-service:
-        name: .NET Build & Test
-        runs-on: ubuntu-latest
-        defaults:
-        run:
-            working-directory: src/SearchService/
-        steps:
-        - uses: actions/checkout@v4
+          name: auction-backend
+          path: auction-publish/
 
-        - name: Setup .NET
-            uses: actions/setup-dotnet@v4
-            with:
-            dotnet-version: 8.0.x
+  search-service:
+    name: SearchService - .NET Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/SearchService/
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Cache NuGet
-            uses: actions/cache@v4
-            with:
-            path: ~/.nuget/packages
-            key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-            restore-keys: nuget-${{ runner.os }}-
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-        - name: Restore
-            run: dotnet restore
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
 
-        - name: Build
-            run: dotnet build --configuration Release --no-restore
+      - name: Restore
+        run: dotnet restore
 
-        - name: Test
-            run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-        - name: Publish artifact
-            run: dotnet publish -c Release -o ../backend-publish
+      - name: Test
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
 
-        - name: Upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-            name: backend
-            path: backend-publish/
-          
-    identity-service:
-        name: .NET Build & Test
-        runs-on: ubuntu-latest
-        defaults:
-        run:
-            working-directory: src/IdentityService/
-        steps:
-        - uses: actions/checkout@v4
+      - name: Publish artifact
+        run: dotnet publish -c Release -o ../search-publish
 
-        - name: Setup .NET
-            uses: actions/setup-dotnet@v4
-            with:
-            dotnet-version: 8.0.x
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: search-backend
+          path: search-publish/
 
-        - name: Cache NuGet
-            uses: actions/cache@v4
-            with:
-            path: ~/.nuget/packages
-            key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-            restore-keys: nuget-${{ runner.os }}-
+  identity-service:
+    name: IdentityService - .NET Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/IdentityService/
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Restore
-            run: dotnet restore
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-        - name: Build
-            run: dotnet build --configuration Release --no-restore
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
 
-        - name: Test
-            run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+      - name: Restore
+        run: dotnet restore
 
-        - name: Publish artifact
-            run: dotnet publish -c Release -o ../backend-publish
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-        - name: Upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-            name: backend
-            path: backend-publish/
-          
-    gateway-service:
-        name: .NET Build & Test
-        runs-on: ubuntu-latest
-        defaults:
-        run:
-            working-directory: src/GatewayService/
-        steps:
-        - uses: actions/checkout@v4
+      - name: Test
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
 
-        - name: Setup .NET
-            uses: actions/setup-dotnet@v4
-            with:
-            dotnet-version: 8.0.x
+      - name: Publish artifact
+        run: dotnet publish -c Release -o ../identity-publish
 
-        - name: Cache NuGet
-            uses: actions/cache@v4
-            with:
-            path: ~/.nuget/packages
-            key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-            restore-keys: nuget-${{ runner.os }}-
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: identity-backend
+          path: identity-publish/
 
-        - name: Restore
-            run: dotnet restore
+  gateway-service:
+    name: GatewayService - .NET Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/GatewayService/
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Build
-            run: dotnet build --configuration Release --no-restore
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
-        - name: Test
-            run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
 
-        - name: Publish artifact
-            run: dotnet publish -c Release -o ../backend-publish
+      - name: Restore
+        run: dotnet restore
 
-        - name: Upload artifact
-            uses: actions/upload-artifact@v4
-            with:
-            name: backend
-            path: backend-publish/
-            
-          
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+
+      - name: Publish artifact
+        run: dotnet publish -c Release -o ../gateway-publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gateway-backend
+          path: gateway-publish/
